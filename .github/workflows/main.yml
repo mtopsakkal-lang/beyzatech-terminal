@@ -8,12 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Setup Expo EAS
         uses: expo/expo-github-action@v8
@@ -22,7 +22,8 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build Android APK
         run: eas build --platform android --profile preview --non-interactive
+
