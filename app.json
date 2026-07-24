@@ -8,6 +8,11 @@
     "userInterfaceStyle": "dark",
     "android": {
       "package": "com.beyzatech.terminal"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8cb51d76-8710-4ee3-b7ae-71456e9539a1"
+      }
     }
   }
 }
