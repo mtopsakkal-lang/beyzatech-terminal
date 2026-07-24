@@ -1,32 +1,26 @@
 {
   "name": "beyzatech-terminal",
-  "version": "8.0.0",
-  "description": "BeyzaTech - Kurumsal Maliyet & Likidite Analiz Ağı",
-  "main": "node_modules/expo/AppEntry.js",
+  "version": "1.0.0",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:apk": "eas build --platform android --non-interactive",
-    "build:aab": "eas build --platform android --non-interactive --output --type app-bundle",
-    "build": "eas build",
-    "eject": "expo eject",
-    "lint": "eslint . --ext .js,.jsx"
+    "ts:check": "tsc"
   },
   "dependencies": {
-    "expo-notifications": "~0.28.19",
-    "expo-device": "~6.0.2"
-    "react": "^18.2.0",
-    "react-native": "^0.73.0",
     "expo": "~50.0.0",
-    "expo-splash-screen": "~0.27.0",
     "expo-status-bar": "~1.12.0",
+    "react": "18.2.0",
+    "react-native": "0.73.0",
+    "expo-notifications": "~0.28.19",
+    "expo-device": "~6.0.2",
+    "expo-splash-screen": "~0.27.0",
     "expo-build-properties": "~0.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@types/react": "~18.2.0",
+    "@types/react": "~18.2.45",
     "@types/react-native": "^0.73.0",
     "eslint": "^8.40.0",
     "eslint-plugin-react": "^7.32.0"
