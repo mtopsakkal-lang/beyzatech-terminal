@@ -1,12 +1,13 @@
 {
   "expo": {
-    "name": "Beyzatech",
-    "slug": "beyzatech",
-    "version": "10.0",
-
+    "name": "BeyzaTech Terminal",
+    "slug": "beyzatech-terminal",
     "android": {
-      "package": "beyzatech-terminal"
-    },
+      "package": "com.beyzatech.terminal"
+    }
+  }
+}
+,
 
     "extra": {
       "eas": {
