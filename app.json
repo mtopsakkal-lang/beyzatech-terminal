@@ -1,5 +1,13 @@
 {
   "expo": {
+    "name": "UygulamaAdi",
+    "slug": "uygulama-adi",
+    "version": "1.0.0",
+
+    "android": {
+      "package": "com.kullaniciadi.uygulamaadi"
+    },
+
     "extra": {
       "eas": {
         "projectId": "cc1c3991-31ee-4f33-9dba-8292aff9ad7d"
