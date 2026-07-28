@@ -1,18 +1,41 @@
 {
   "expo": {
-    "name": "BeyzaTech Terminal",
-    "slug": "beyzatech",
-    "version": "1.0.0",
+    "name": "BEYZATECH TERMINAL",
+    "slug": "beyzatech-terminal",
+    "version": "11.0.0",
 
-    "android": {
-      "package": "com.beyzatech.terminal"
+    "orientation": "portrait",
+
+    "icon": "./assets/icon.png",
+
+    "userInterfaceStyle": "dark",
+
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#090D16"
     },
 
-    "extra": {
-      "eas": {
-        "projectId":
-        "cc1c3991-31ee-4f33-9dba-8292aff9ad7d"
+    "android": {
+
+      "package": "com.beyzatech.terminal",
+
+      "versionCode": 11,
+
+      "permissions": [
+        "INTERNET",
+        "VIBRATE",
+        "POST_NOTIFICATIONS"
+      ],
+
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#090D16"
       }
-    }
+    },
+
+    "plugins": [
+      "expo-notifications"
+    ]
   }
 }
