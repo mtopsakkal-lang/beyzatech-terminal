@@ -414,5 +414,16 @@ padding:15,
 marginTop:10,
 alignItems:"center"
 }
+const [market,setMarket]=useState("BINANCE");
+
+const [funding,setFunding]=useState("0.0000");
+
+const [oi,setOI]=useState("0");
+
+const [source,setSource]=useState("copy");
+
+const [aiText,setAIText]=useState(
+"Kurumsal emir akışı analiz ediliyor..."
+);
 
 });
