@@ -1,1 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="splashscreen_background">
+        #090D16
+    </color>
+
+</resources>
 
