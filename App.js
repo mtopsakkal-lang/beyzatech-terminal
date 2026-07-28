@@ -1,358 +1,328 @@
-import React, {useEffect, useState} from "react";
+import React,{
+useEffect,
+useState
+} from "react";
+
 
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet
+
+View,
+Text,
+ScrollView,
+TouchableOpacity,
+StyleSheet
+
 } from "react-native";
+
+
+import {
+getBinanceDepth
+} from "./api/binance";
+
+
+import {
+getBitgetDepth
+} from "./api/bitget";
+
+
+import {
+calculateRisk
+} from "./engine/riskEngine";
+
+
+import SignalCard from "./components/SignalCard";
+import AIScore from "./components/AIScore";
+import LiquidityWall from "./components/LiquidityWall";
+
 
 
 export default function App(){
 
-  const [coin,setCoin] = useState("BTC");
-  const [exchange,setExchange] = useState("BITGET");
 
-  const [ratio,setRatio] = useState("50 / 50");
-  const [signal,setSignal] = useState("NÖTR / BEKLE");
+const [coin,setCoin]=useState("BTC");
 
-  const [longAvg,setLongAvg] = useState("0.0000");
-  const [shortAvg,setShortAvg] = useState("0.0000");
+const [exchange,setExchange]=useState("BINANCE");
 
-  const [entry,setEntry] = useState("0.0000");
-  const [stop,setStop] = useState("0.0000");
-  const [tp1,setTp1] = useState("0.0000");
-  const [tp2,setTp2] = useState("0.0000");
 
-  const [leverage,setLeverage] = useState("10x");
+const [result,setResult]=useState({
 
+signal:"NÖTR",
 
-  async function fetchAnalysis(){
+score:50
 
-    try{
+});
 
-      const symbol =
-        coin.toUpperCase()+"USDT";
 
+const [walls,setWalls]=useState([]);
 
-      const url =
-      `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=100`;
 
 
-      const response =
-      await fetch(url);
+async function scan(){
 
 
-      const data =
-      await response.json();
+let book;
 
 
+if(exchange==="BINANCE")
 
-      let bidVol=0;
-      let askVol=0;
+book=
+await getBinanceDepth(coin);
 
-      let bidValue=0;
-      let askValue=0;
 
+else
 
+book=
+await getBitgetDepth(coin);
 
-      data.bids.forEach(item=>{
 
-        let price =
-        Number(item[0]);
 
-        let amount =
-        Number(item[1]);
+let bidVol=0;
+let askVol=0;
 
-        bidVol += amount;
-        bidValue += price*amount;
+let bidValue=0;
+let askValue=0;
 
-      });
 
 
+book.bids.forEach(x=>{
 
-      data.asks.forEach(item=>{
+let p=Number(x[0]);
+let a=Number(x[1]);
 
-        let price =
-        Number(item[0]);
+bidVol+=a;
+bidValue+=p*a;
 
-        let amount =
-        Number(item[1]);
+});
 
-        askVol += amount;
-        askValue += price*amount;
 
-      });
 
+book.asks.forEach(x=>{
 
+let p=Number(x[0]);
+let a=Number(x[1]);
 
-      const current =
-      (
-        Number(data.bids[0][0])+
-        Number(data.asks[0][0])
-      )/2;
+askVol+=a;
+askValue+=p*a;
 
+});
 
 
-      const longAverage =
-      bidValue/bidVol;
 
+let price=
 
-      const shortAverage =
-      askValue/askVol;
+(
+Number(book.bids[0][0])
++
+Number(book.asks[0][0])
 
+)/2;
 
 
-      const longPercent =
-      Math.round(
-       (bidVol/(bidVol+askVol))*100
-      );
 
+let longAvg=
+bidValue/bidVol;
 
 
-      const isLong =
-      current >
-      ((longAverage+shortAverage)/2);
+let shortAvg=
+askValue/askVol;
 
 
+let ratio=
 
-      setSignal(
-        isLong ? "LONG" : "SHORT"
-      );
+Math.round(
 
+bidVol/
+(bidVol+askVol)
+*100
 
-      setRatio(
-       `${longPercent} / ${100-longPercent}`
-      );
+);
 
 
-      setLongAvg(
-       longAverage.toFixed(4)
-      );
 
+let risk=
 
-      setShortAvg(
-       shortAverage.toFixed(4)
-      );
+calculateRisk(
 
+price,
+longAvg,
+shortAvg,
+ratio
 
-      let giris =
-      isLong
-      ? current*0.998
-      : current*1.002;
+);
 
 
 
-      let sl =
-      isLong
-      ? giris*0.982
-      : giris*1.018;
+setResult(risk);
 
 
 
-      setEntry(
-        giris.toFixed(4)
-      );
+setWalls(
 
+[...book.bids,...book.asks]
 
-      setStop(
-        sl.toFixed(4)
-      );
+.sort(
+(a,b)=>
+Number(b[1])-Number(a[1])
+)
 
+.slice(0,10)
 
-      setTp1(
-       (
-        isLong
-        ? giris*1.03
-        : giris*0.97
-       ).toFixed(4)
-      );
+.map(x=>({
 
+price:x[0],
+amount:x[1]
 
-      setTp2(
-       (
-        isLong
-        ? giris*1.045
-        : giris*0.955
-       ).toFixed(4)
-      );
+}))
 
+);
 
 
-      setLeverage("15x");
+}
 
 
-    }
-    catch(error){
 
-      console.log(error);
+useEffect(()=>{
 
-    }
 
-  }
+scan();
 
 
+const timer=
+setInterval(
+scan,
+5000
+);
 
-  useEffect(()=>{
 
-    fetchAnalysis();
+return()=>clearInterval(timer);
 
 
-    const timer =
-    setInterval(
-      fetchAnalysis,
-      5000
-    );
+},[coin,exchange]);
 
 
-    return ()=>clearInterval(timer);
 
-
-  },[coin]);
-
-
-
-
-return (
+return(
 
 <ScrollView style={styles.page}>
 
 
 <Text style={styles.title}>
-⚡ BEYZATECH TERMINAL v10.0
+
+⚡ BEYZATECH TERMINAL v11
+
 </Text>
 
 
 <Text style={styles.sub}>
-Maliyet Analizi & Kripto Formasyon Sinyal Motoru
+
+AI Futures Trading Engine
+
 </Text>
 
 
 
-<Text style={styles.coin}>
-{coin}/USDT ({exchange})
-</Text>
+<View style={styles.row}>
 
 
-
-<View style={styles.card}>
-<Text>
-LONG / SHORT ORANI
-</Text>
-
-<Text style={styles.value}>
-{ratio}
-</Text>
-</View>
-
-
-
-<View
-style={[
-styles.signal,
-{
-backgroundColor:
-signal==="LONG"
-?"#10B981"
-:"#EF4444"
-}
-]}
+<TouchableOpacity
+onPress={()=>setExchange("BINANCE")}
+style={styles.button}
 >
 
-<Text style={styles.signalText}>
-{signal}
-</Text>
+<Text>BINANCE</Text>
 
-</View>
-
-
-
-<View style={styles.card}>
-<Text>
-LONG Ortalama:
-${longAvg}
-</Text>
-
-<Text>
-SHORT Ortalama:
-${shortAvg}
-</Text>
-
-</View>
-
-
-
-<View style={styles.card}>
-
-<Text>
-Risk Motoru:
-{leverage}
-</Text>
-
-
-<Text>
-Giriş:
-${entry}
-</Text>
-
-
-<Text>
-SL:
-${stop}
-</Text>
-
-
-<Text>
-TP1:
-${tp1}
-</Text>
-
-
-<Text>
-TP2:
-${tp2}
-</Text>
-
-</View>
-
-
-
-<TextInput
-
-style={styles.input}
-
-value={coin}
-
-onChangeText={setCoin}
-
-/>
+</TouchableOpacity>
 
 
 
 <TouchableOpacity
+onPress={()=>setExchange("BITGET")}
 style={styles.button}
-onPress={fetchAnalysis}
 >
 
-<Text>
-TARA
-</Text>
+<Text>BITGET</Text>
 
 </TouchableOpacity>
+
+
+</View>
+
+
+
+<Text style={styles.coin}>
+
+{coin}/USDT {exchange}
+
+</Text>
+
+
+
+<AIScore score={result.score}/>
+
+
+<SignalCard signal={result.signal}/>
+
+
+<LiquidityWall data={walls}/>
+
+
+
+<View style={styles.card}>
+
+
+<Text>
+
+Giriş:
+{result.entry}
+
+</Text>
+
+
+<Text>
+
+SL:
+{result.stop}
+
+</Text>
+
+
+<Text>
+
+TP1:
+{result.tp1}
+
+</Text>
+
+
+<Text>
+
+TP2:
+{result.tp2}
+
+</Text>
+
+
+<Text>
+
+Kaldıraç:
+{result.leverage}x
+
+</Text>
+
+
+</View>
 
 
 </ScrollView>
 
 );
 
+
 }
 
 
 
-const styles =
-StyleSheet.create({
+const styles=StyleSheet.create({
 
 page:{
 backgroundColor:"#090D16",
@@ -361,69 +331,37 @@ padding:20
 
 title:{
 color:"#fff",
-fontSize:22,
+fontSize:24,
 fontWeight:"bold",
 marginTop:40
 },
 
 sub:{
-color:"#38BDF8",
-marginBottom:20
+color:"#38BDF8"
 },
 
 coin:{
 color:"#fff",
-fontSize:20
-},
-
-card:{
-backgroundColor:"#111827",
-padding:15,
-marginTop:10,
-borderRadius:8
-},
-
-value:{
-color:"#38BDF8",
-fontSize:18
-},
-
-signal:{
-padding:15,
-marginTop:15,
-borderRadius:8
-},
-
-signalText:{
-color:"#fff",
-textAlign:"center",
 fontSize:20,
-fontWeight:"bold"
+marginTop:20
 },
 
-input:{
-backgroundColor:"#1E293B",
-color:"#fff",
-marginTop:20,
-padding:12
+row:{
+flexDirection:"row",
+gap:10,
+marginTop:20
 },
 
 button:{
 backgroundColor:"#2563EB",
 padding:15,
-marginTop:10,
-alignItems:"center"
+borderRadius:8
+},
+
+card:{
+backgroundColor:"#111827",
+padding:15,
+marginTop:15
 }
-const [market,setMarket]=useState("BINANCE");
-
-const [funding,setFunding]=useState("0.0000");
-
-const [oi,setOI]=useState("0");
-
-const [source,setSource]=useState("copy");
-
-const [aiText,setAIText]=useState(
-"Kurumsal emir akışı analiz ediliyor..."
-);
 
 });
