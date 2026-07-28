@@ -2,16 +2,10 @@
   "expo": {
     "name": "Beyzatech",
     "slug": "beyzatech-terminal",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
-    "android": {
-      "package": "com.beyzatech.terminal"
-    },
+    ...
     "extra": {
       "eas": {
-        "projectId": "05de042a-4478-4768-85cc-99712e5586fd"
+        "projectId": "ce1c3991-31ee-4f33-9dba-8292aff9ad7d"
       }
     }
   }
